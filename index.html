@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>餐廳每日自主點檢表（數位版）</title>
+<style>
+:root{
+--main-color:#ff7700;
+--accent-color:#f44336;
+--bg-light:#f7f7f7;
+--font-main:'Noto Sans','Microsoft JhengHei','Arial',sans-serif;
+--shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+body{font-family:var(--font-main);background:var(--bg-light);margin:0;color:#222;}
+header{background:#fff;box-shadow:var(--shadow);padding:24px 0 16px 0;text-align:center;}
+header h1{font-size:2rem;font-weight:700;color:var(--main-color);margin:0;}
+.main-navbar,.sub-navbar{display:flex;justify-content:center;flex-wrap:wrap;background:#fff;padding:8px 8px 6px 8px;box-shadow:var(--shadow);gap:8px;}
+.main-navbar{margin-top:2px;border-bottom:1.5px solid #ffe2c6;}
+.main-navbar a,.sub-navbar a{text-decoration:none;color:#555;font-weight:500;padding:10px 18px;border-radius:15px;transition:background .2s,color .2s;cursor:pointer;background:#fff;border:none;font-size:1rem;}
+.main-navbar a.active,.sub-navbar a.active{background:var(--main-color);color:#fff;font-weight:800;box-shadow:0 2px 7px #fffbf0;}
+main{max-width:575px;margin:32px auto 24px auto;background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:24px 16px 32px 16px;position:relative;min-height:320px;}
+.form-group{margin-bottom:18px;display:flex;flex-direction:column;}
+label{font-weight:600;margin-bottom:7px;}
+input,select,textarea{font-family:var(--font-main);font-size:1rem;padding:8px;border:1px solid #ddd;border-radius:6px;background:#fafafa;transition:border .2s;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--main-color);}
+.notice{font-weight:700;color:var(--accent-color);background:#fff3e0;padding:12px 16px;border-radius:8px;margin-bottom:16px;text-align:center;}
+.explain-box{background:#f8fafc;border-left:4px solid var(--main-color);color:#334;padding:13px 14px;margin-bottom:15px;border-radius:8px;font-size:.97rem;line-height:1.7;}
+.explain-box ul{margin:0;padding-left:19px;}
+.highlight-orange{color:#ff7700!important;font-weight:600;}
+.data-table{width:100%;border-collapse:collapse;margin-bottom:20px;table-layout:fixed;background:#fff;}
+.data-table th,.data-table td{border:1px solid #eee;padding:8px 4px;text-align:center;font-size:.97rem;word-break:break-all;}
+.data-table th{background:#f5f5f5;font-weight:600;color:#555;}
+.data-table td input,.data-table td select{width:90%;min-width:0;box-sizing:border-box;margin:0;}
+.signature-group{margin-top:12px;display:flex;flex-direction:column;gap:7px;}
+.cta-btn,.tab-done-btn{background:var(--main-color);color:#fff;font-weight:700;font-size:1.13rem;border:none;border-radius:13px;padding:14px 0;margin-top:18px;cursor:pointer;width:100%;box-shadow:0 2px 8px rgba(255,119,0,.13);transition:background .2s,box-shadow .2s;}
+.cta-btn:active,.cta-btn:hover,.tab-done-btn:hover{background:#d66400;box-shadow:0 4px 16px rgba(255,119,0,.17);}
+.done-indicator{display:inline-block;background:#65bd21;color:#fff;border-radius:100px;font-size:14px;padding:0 10px;margin-left:9px;vertical-align:2px;font-weight:bold;}
+.sub-navbar a.done-sub{border:2px solid #20bb72 !important;background:#e9ffe0;color:#137a38 !important;}
+footer{margin:0 auto;text-align:right;padding:16px 20px;color:#bbb;font-size:1rem;position:relative;}
+.footer-logo{display:inline-block;width:72px;height:28px;background:url('https://www.mediatek.com/-/media/mediatek/corp/mediatek_logo.png') no-repeat center/contain;vertical-align:middle;opacity:.6;}
+
+@media (max-width:700px){
+main{max-width:99vw;padding:12px 1vw 19px;border-radius:10px;margin:7px auto;}
+.main-navbar,.sub-navbar{flex-direction:column;gap:6px;padding:8px 1vw;}
+.main-navbar a,.sub-navbar a{padding:10px 12px;border-radius:12px;font-size:.98rem;}
+.explain-box{font-size:.92rem;}
+.data-table th,.data-table td{font-size:.89rem;padding:6px 2px;}
+.cta-btn,.tab-done-btn{font-size:1rem;padding:12px 0;}
+footer{padding:9px 9px;font-size:.93rem;}
+.footer-logo{width:52px;height:19px;}
+}
+
+.mail-content-box{background:#fffbe7;color:#222;border-radius:8px;padding:14px 10px;margin:14px 0;font-size:.96rem;border:1px solid #ffb600;white-space:pre-wrap;display:none;}
+
+/* 管理後台 RWD 與樣式 */
+#adminPanel{max-height:90vh;overflow:auto;}
+@media (max-width:600px){
+#adminPanel{max-width:98vw;margin:10px auto 0;padding:14px 1vw;}
+}
+.admin-section{margin-bottom:17px;padding-bottom:10px;border-bottom:1px solid #eee;}
+.admin-table{width:100%;border-collapse:collapse;background:#fff;}
+.admin-table th,.admin-table td{border:1px solid #eee;padding:7px 3px;font-size:.95rem;text-align:center;}
+.admin-table th{background:#ffe1d7;}
+.admin-btn{background:#ff7700;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;margin-right:10px;}
+.admin-btn.danger{background:#f44336;}
+.admin-btn.sm{font-size:.89rem;padding:4px 6px;}
+.admin-modal-mask{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(35,35,35,.29);z-index:12000;}
+.admin-modal{
+position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+min-width:280px;max-width:90vw;
+background:#fff;border-radius:13px;box-shadow:0 8px 28px rgba(55,55,55,.14);
+z-index:12001;padding:26px 26px;font-size:1rem;
+max-height:85vh; overflow:auto;
+}
+.admin-modal h2{margin-top:0;font-weight:700;font-size:1.17rem;}
+.admin-modal input,.admin-modal select{margin-bottom:8px;width:100%;padding:8px;}
+.admin-modal label{font-weight:600;}
+.admin-table tr.selected{background:#ffe3b7;}
+#adminLoginPanel input{font-size:1.08rem;}
+</style>
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:400,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+
+
+<body>
+<!-- 後台入口 -->
+<div id="adminEntry" style="position:fixed;top:16px;right:19px;z-index:9999;">
+  <button id="openAdminBtn"
+    style="background:#ff7700;color:#fff;border:none;border-radius:8px;font-weight:700;padding:9px 18px;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);cursor:pointer;">
+    後台管理
+  </button>
+</div>
+
+<!-- 後台 Modal -->
+<div id="adminModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:rgba(31,31,31,0.14);backdrop-filter:blur(1px);">
+  <div id="adminPanel" style="max-width:650px;width:96vw;min-height:360px;margin:44px auto 0;background:#fff;border-radius:13px;box-shadow:0 7px 24px 0 rgba(50,50,50,0.13);padding:29px 10px 23px 20px;position:relative;overflow:auto;display:flex;flex-direction:column;">
+    <button id="closeAdmin" style="position:absolute;top:7px;right:13px;background:#faebd7;color:#d66400;border:none;border-radius:100px;font-size:1.6rem;cursor:pointer;width:38px;height:38px;font-weight:bold;">×</button>
+    <div id="adminLoginPanel"></div>
+    <div id="adminContentPanel"></div>
+  </div>
+</div>
+
+<header>
+  <h1>餐廳每日自主點檢表（數位版）</h1>
+</header>
+
+<nav class="main-navbar" id="main-navbar"></nav>
+<nav class="sub-navbar" id="sub-navbar"></nav>
+
+<main>
+  <div id="commonFields">
+    <div class="form-group">
+      <label for="date">日期：</label>
+      <input id="date" type="date" required>
+    </div>
+    <div class="form-group">
+      <label for="site">辦公區：</label>
+      <select id="site" required>
+        <option value="">請選擇</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="vendor">廠商名稱：</label>
+      <select id="vendor" required>
+        <option value="">請選擇</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="vendorEmail">廠商 EMAIL（如有多位，請用分號「;」分隔）：</label>
+      <input id="vendorEmail" type="email" readonly>
+    </div>
+    <!-- 新增 iPhone 勾選 -->
+    <div class="form-group">
+      <label>
+        <input id="isIphoneCheckbox" type="checkbox">
+        此裝置為 iPhone
+      </label>
+      <span id="isIphoneNote" style="color:#888;font-size:.92rem;"></span>
+    </div>
+  </div>
+
+  <div id="notice" class="notice"></div>
+  <div id="tabContent"></div>
+
+  <button class="cta-btn" id="mainSubmitBtn" style="display:block;margin-bottom:0px;">
+    送出本時段所有點檢紀錄
+  </button>
+
+  <div id="mailContentBox" class="mail-content-box"></div>
+</main>
+
+<footer>
+  <span style="display:block;margin-top:8px;color:#666;font-size:1em;text-align:center;">
+    版權所有 @ 2026 MediaTek。保留所有權利
+  </span>
+</footer>
+
+<script>
+/*========================================
+   1?? 基本設定、資料結構
+========================================*/
+/* ---------- Email 正規化 / 檢查 ---------- */
+function validateAndSanitizeEmails(emailStr) {
+  // 1. 全形分號 → 半形分號
+  let cleaned = emailStr.replace(/；/g, ';');
+  // 2. 移除所有空白（包含換行、Tab）
+  cleaned = cleaned.replace(/\s+/g, '');
+  // 3. 以 ; 或 , 為分隔符切割
+  const parts = cleaned.split(/[;,]/).filter(e => e);
+  // 4. 判斷每一個是否為合法的 email
+  const invalids = parts.filter(e => !/^[\w.-]+@[\w.-]+\.\w+$/.test(e));
+  return {
+    cleaned,                     // 已清理的字串（仍保留分號或逗號）
+    valid: invalids.length === 0, // true → 全部合法
+    invalids                     // 若有非法的 email，會陣列回傳
+  };
+}
+
+/* iPhone 用來把所有分號轉成逗號的簡易 wrapper */
+function normalizeVendorEmail(email, isIphone) {
+  let txt = email.replace(/；/g, ';').replace(/\s+/g, '');
+  if (isIphone) txt = txt.replace(/;/g, ',');
+  return txt;
+}
+
+/* ---------- 基本資料 ---------- */
+const SCHEDULES = [
+  { key:'penalty', label:'廚房注意事項及罰款', subTabs:[{key:'penalty-table', label:'注意事項/罰款表'}] },
+  { key:'early', label:'每日使用前－早', subTabs:[
+    {key:'cold', label:'冷藏/冷凍溫度記錄'},
+    {key:'vendor', label:'餐飲廠商自我檢查'},
+    {key:'oil', label:'油脂品質檢查'},
+    {key:'storage', label:'庫房溫度'}
+  ]},
+  { key:'late', label:'每日使用前－晚', subTabs:[{key:'cold', label:'冷藏/冷凍溫度記錄'}] },
+  { key:'night', label:'晚間下班離開前', subTabs:[
+    {key:'vendor', label:'餐飲廠商自我檢查'},
+    {key:'water', label:'水表紀錄'},
+    {key:'safety', label:'廚房安全檢查'}
+  ]}
+];
+
+/* 原始廠商資料 (加上 isIphone 欄位、預設 false) */
+const EXCEL_VENDORS = [
+  {site:"HC-AB", name:"千八自助餐", email:"", refrigeratorA:1, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-AB", name:"富老爹", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-AB", name:"星馬快餐", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"米藍", email:"", refrigeratorA:1, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"禮面作", email:"", refrigeratorA:2, refrigeratorB:2, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"愛米菜", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"有村食堂", email:"", refrigeratorA:6, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"八方雲集", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:true, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"麥味登", email:"", refrigeratorA:5, refrigeratorB:2, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"REAL真", email:"", refrigeratorA:2, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"果汁熊", email:"", refrigeratorA:7, refrigeratorB:2, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"星巴克", email:"", refrigeratorA:4, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-AB", name:"麥當勞", email:"", refrigeratorA:5, refrigeratorB:6, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-C", name:"芸彩薈自助餐", email:"", refrigeratorA:3, refrigeratorB:2, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-C", name:"芸彩薈櫃位", email:"", refrigeratorA:2, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-C", name:"果汁熊", email:"", refrigeratorA:2, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-C", name:"沐咖啡", email:"", refrigeratorA:5, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-D", name:"銍食堂自助餐", email:"", refrigeratorA:4, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-D", name:"好味到", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-D", name:"波奇波奇", email:"", refrigeratorA:5, refrigeratorB:2, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-D", name:"大苑子", email:"", refrigeratorA:6, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-D", name:"路易莎", email:"", refrigeratorA:7, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-E", name:"阿餅師自助餐", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-E", name:"龍虎海南雞飯", email:"", refrigeratorA:6, refrigeratorB:2, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-E", name:"大苑子", email:"", refrigeratorA:3, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-E", name:"沐咖啡", email:"", refrigeratorA:7, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-V", name:"Me Time自助餐", email:"", refrigeratorA:2, refrigeratorB:2, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"HC-V", name:"果汁熊", email:"", refrigeratorA:2, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"HC-V", name:"沐咖啡", email:"", refrigeratorA:3, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"TP-C", name:"昊翰自助餐", email:"", refrigeratorA:4, refrigeratorB:1, constantTemp:false, storageRoom:true, isIphone:false},
+  {site:"TP-C", name:"果汁熊", email:"", refrigeratorA:2, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"TP-R", name:"果汁熊", email:"", refrigeratorA:2, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+  {site:"TP-X", name:"果汁熊", email:"", refrigeratorA:2, refrigeratorB:1, constantTemp:false, storageRoom:false, isIphone:false},
+];
+
+/* LocalStorage keys */
+const LS_VENDORS_KEY = "vendors";
+const LS_ADMIN_KEY   = "admins";
+const LS_RECORDS_KEY = "records";
+const LS_FORMS_KEY   = "vendorForms";
+
+/* 初始化：若 localStorage 尚未有資料則寫入預設值 */
+if(!localStorage.getItem(LS_VENDORS_KEY)){
+  localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(EXCEL_VENDORS));
+}
+
+/*========== 2?? 表單、狀態、Nav 渲染 ==========*/
+
+let formData = {};
+SCHEDULES.forEach(s=>{
+  formData[s.key] = {};
+  s.subTabs.forEach(st=>formData[s.key][st.key]=null);
+});
+
+let currentMainTab = SCHEDULES[0].key;
+let currentSubTab = SCHEDULES[0].subTabs[0].key;
+
+/* ==============================
+   penalty 表
+============================== */
+const penaltyItems = [
+  ["1","廚房應於每餐作業後完成清洗，善盡使用維護職責並保持完整，地面應保持乾爽，不可濕滑","2,000"],
+  ["2","各種用具每餐供餐餐後務必要清洗乾淨，就定位","2,000"],
+  ["3","水溝蓋板每天應清潔一次","2,000"],
+  ["4","工作場所、廚房四周環境及通道需每日清理，隨時維持乾淨","2,000"],
+  ["5","工作人員未於用餐結束後兩小時內，將工作場所相關設施清理完畢或清理不乾淨者（非每日例行項目除外）","2,000"],
+  ["6","供膳期間點餐區之地面、台面..等遭食物污染時，人員未能即時保持整潔","2,000"],
+  ["7","廚房之門牆、地板、排水溝、通風口及各種調理台、倉庫、器具、設備污穢，經提出告誡而未改善","2,000"],
+  ["8","應於每餐供餐結束後一小時內將供餐膳區周邊之設備等(如調味車、餐檯)，全部清理乾淨","2,000"],
+  ["9","廚房之門牆、地板、排水溝、通風口及各種調理台、倉庫、器具、設備污穢","2,000"],
+  ["10","每周清洗一次油煙罩","2,000"],
+  ["11","設備與器具應避免使用易破碎材質，並保持平滑、無凹陷、生鏽或裂縫，且雜物應定位擺放，避免異物掉落。","2,000"],
+  ["12","人員未依規定每一年到指定之醫療單位進行健康檢查，或逾期繳交健康檢查報告者","2,000"],
+  ["13","人員未遵守各項門禁管制規定","2,000"],
+  ["14","人員未填寫規定之例行性報表","2,000"],
+  ["15","人員服務態度不佳，經提出告誡未立即改善者","2,000"],
+  ["16","人員於供餐時間內，未依規定穿著工作制服、口罩、鞋帽等事項，髮帽應完整包覆頭髮、口罩應覆蓋口鼻","2,000"],
+  ["17","人員於供餐時間內，配戴手錶、戒指、手環、手鏈等飾物或指甲未修剪..等個人衛生習慣不良","2,000"],
+  ["18","手指不可觸及餐具之內緣或飲食物，應戴完整、清潔的丟棄式衛生手套（用一次即丟）","2,000"],
+  ["19","人員個人衣物及私人物品應專區放置","2,000"],
+  ["20","人員於本公司內（指吸煙室以外任一區域）抽菸、喝酒、吃檳榔、賭博、鬥毆或有其他不良行為者。廚房內發現煙頭、檳榔渣、賭具、酒瓶（調理用除外）皆視同有前述之情況","2,000"],
+  ["21","人員如調離廠區或離職，三日內未將工作證及所需繳回之物品繳回管理者","2,000"],
+  ["22","人員未填寫規定之例行性報表","2,000"],
+  ["23","所產生之垃圾或廚餘未依照規定程序處理","2,000"],
+  ["24","午、晚餐餐盒(含公務便當)菜色不符或超過規定時限內送達","2,000"],
+  ["25","餐點菜單未於前二週提供審核，或未上傳至餐飲網頁(包含圖示)","2,000"],
+  ["26","未依規定製作餐點名稱、英文菜單","2,000"],
+  ["27","未依規定準備預留系統線上訂餐之餐點","2,000"],
+  ["28","未經許可，於內用餐點提供紙製免洗餐具","2,000"],
+  ["29","水果清洗不淨經告誡未改善者","2,000"],
+  ["30","供膳廚房、倉儲區內物品、材料、食材、炊具等，應衛生條件下分類貯放，不得任意堆放或直接放置於地面。應離地離牆壁各五公分以上","2,000"],
+  ["31","已解凍的食物應立即烹煮，不得再冰存使用","2,000"],
+  ["32","油品、醬油限使用食品TQF之合格品牌，油炸油管理符合相關法令規定","2,000"],
+  ["33","新鮮蔬菜（噴灑農藥蔬菜不得做生菜沙拉）","2,000"],
+  ["34","原、材、物料之使用，應依先進先用之原則，避免混雜使用","2,000"],
+  ["35","冰庫於明顯處設有溫度顯示器且須冷藏庫0℃~7℃，冷凍庫為-18℃以下，並進行紀錄","2,000"],
+  ["36","倉庫須設有溫、溼度計，溫度：28℃以下，濕度：70%以下，並進行紀錄","2,000"],
+  ["37","開封後之食材、原物料、調味料應存放於有蓋密封之容器中或袋裝完整包覆","2,000"],
+  ["38","製備菜餚儲存及供應維持適當溫度，熱藏溫度保持60℃以上","2,000"],
+  ["39","食品進行解凍時應使用冷藏解凍或流水解凍，防止品質劣化之條件下進行，並避免汙染其他食品","2,000"],
+  ["40","剩餘沾料禁止再供應使用。剩菜、剩飯禁止隔餐使用","2,000"],
+  ["41","經分裝食材，應依規定標示(1)中文品名(2)進貨日期(3)有效日期","2,000"],
+  ["42","供膳廚房內有蟑螂、老鼠、貓、狗等動物出入","5,000"],
+  ["43","所有用具、刀具、砧板、容器、冷凍冷藏庫，應依生、熟食區隔。其中刀具及砧板、抹布須明顯標示顏色，以區分生、熟食。顏色區分：生食(藍)。熟食.櫃檯(紅)。爐灶(綠)。需分類使用及放置","5,000"],
+  ["44","各設備（如油煙罩、蒸烤箱…等）應依規定程序使用，每餐清潔各廚房設備(包含食物殘渣、滴油等)、牆面","5,000"],
+  ["45","不當使用廚房設備而產生消防警報","5,000"],
+  ["46","未保留每餐各項食物檢體達200公克、並冰存48小時以上供抽驗，或未於檢體上標示日期、餐別、品名","5,000"],
+  ["47","人員不適任或品行不良、行為粗暴者，得隨時要求更換，應於二日內更換之，逾期每日得扣罰新台幣伍仟元，連續扣罰至更換為止","5,000"],
+  ["48","因使用水電、瓦斯或其他物品，造成災害或虛驚或經稽核有重大危害時","5,000"],
+  ["49","駐廠廚師持證比例，未達合約60%要求之比例","5,000"],
+  ["50","將廚餘(菜渣)或未經清洗的餐具，放入餐具回收箱導致惡臭產生","5,000"],
+  ["51","銷售餐點之項目或價格未經同意","5,000"],
+  ["52","未經同意，無故未準時提供菜單或擅自變更菜單（各類食材重量、尺寸變動亦屬菜單變更）時","5,000"],
+  ["53","未依照本約定之供餐時間供應伙食，包含延遲供應或提前結束供餐","5,000"],
+  ["54","供應食物腐敗或不新鮮","5,000"],
+  ["55","供餐時間內，供餐中斷3分鐘以上（凡有缺菜皆屬供餐中斷），但經同意者除外","5,000"],
+  ["56","提供之餐點仍在未煮熟之狀態","5,000"],
+  ["57","供應之餐點有瑕疵者，例如：食物不潔或有異物（如毛髮、菜蟲、皮毛、內臟、鱗片、蒼蠅等其他不相關之雜物），甲方應立即更換餐點","5,000"],
+  ["58","食品應貯存完善，保持新鮮度，不可有過期或變質、腐壞食品","5,000"],
+  ["59","雞、鴨、魚、牛、豬等肉品，如有CAS、HACCP認證之產品，應採用經認證之產品肉品類製造商需為CAS認證廠商或經主管機關核發執照溫體肉品，需檢附合格屠宰場證明。","5,000"],
+  ["60","使用未經政府機關核可之副食品 (如油脂、調味料或烹調添加劑等) ","5,000"],
+  ["61","使用政府機關公告禁止使用之化學螢光劑、防腐劑及漂白劑之物品者","5,000"],
+  ["62","每餐供餐結束後，人員離開廚房，爐火、瓦斯及各項設備未關閉","10,000"],
+  ["63","未經聯發科技之業務負責人員同意，利用廚房所有設備、空間，做非本公司需求之事務者","10,000"],
+  ["64","豬牛肉原料原產地應正確明確標示","10,000"],
+  ["65","豬牛肉原料原產地標示與來源證明或進貨單不相符","50,000"],
+  ["66","應遵守公告之衛生安全相關規定","50,000"]
+];const penaltyRowsHTML = penaltyItems.map(([idx,desc,penalty])=>`
+<tr><td>${idx}</td><td style="text-align:left;">${desc}</td><td>${penalty}</td></tr>`).join('');
+
+/* === 表格維護：是否顯示子分頁 (後台設定) === */
+function getVendorFormsConfig(site, name){
+  const forms = JSON.parse(localStorage.getItem(LS_FORMS_KEY)||'[]');
+  return forms.find(f=>f.site===site && f.name===name) || null;
+}
+function isSubTabEnabledByAdmin(mainKey, subKey, formsCfg){
+  if(mainKey==='penalty') return true;
+  if(!formsCfg) return true;
+  const map = {
+    cold:    formsCfg.cold,
+    vendor:  formsCfg.vendor,
+    oil:     formsCfg.oil,
+    storage: formsCfg.storage,
+    water:   formsCfg.water,
+    safety:  formsCfg.safety
+  };
+  return !!map[subKey];
+}
+
+/* === 產生 NA 文字 (後台關掉時使用) === */
+function buildNAFormMailText(subKey, mainKey){
+  const join = arr=>arr.map(x=>`${x.t}，${x.v}`).join('；\n');
+  if(subKey==='cold'){
+    const a=[];
+    a.push({t:'點檢員簽名',v:'NA'});
+    a.push({t:'常溫1冷藏溫度',v:'NA (無此設備)'});
+    for(let i=1;i<=7;i++){
+      a.push({t:`A${i}冷藏溫度`, v:'NA (無此設備)'});
+      a.push({t:`B${i}冷凍溫度`, v:'NA (無此設備)'});
+      a.push({t:`A${i}/B${i}異常備註`, v:'NA (無此設備)'});
+    }
+    return join(a);
+  }
+  if(subKey==='vendor'){
+    const items = (mainKey==='early') ? VENDOR_CHECK_ITEMS_EARLY : VENDOR_CHECK_ITEMS_NIGHT;
+    const a = items.map(t=>({t, v:'NA (無此設備)'}));
+    a.push({t:'點檢員簽名', v:'NA'});
+    return join(a);
+  }
+  if(subKey==='oil'){
+    const a=[
+      {t:'今天將使用油炸油', v:'NA (無此設備)'},
+      {t:'油顏色太深', v:'NA (無此設備)'},
+      {t:'油品泡沫', v:'NA (無此設備)'},
+      {t:'油炸油發煙', v:'NA (無此設備)'},
+      {t:'酸價檢測（mgKOH/g）', v:'NA (無此設備)'},
+      {t:'今日是否更換全新油炸油', v:'NA (無此設備)'},
+      {t:'點檢員簽名', v:'NA'}
+    ];
+    return join(a);
+  }
+  if(subKey==='storage'){
+    const a=[
+      {t:'點檢員簽名', v:'NA'},
+      {t:'溫度(°C)', v:'NA (無此設備)'},
+      {t:'濕度(%)', v:'NA (無此設備)'},
+      {t:'異常/備註', v:'NA (無此設備)'}
+    ];
+    return join(a);
+  }
+  if(subKey==='water'){
+    const a=[
+      {t:'抄表度數', v:'NA (無此設備)'},
+      {t:'異常/備註', v:'NA (無此設備)'},
+      {t:'點檢員簽名', v:'NA'}
+    ];
+    return join(a);
+  }
+  if(subKey==='safety'){
+    const items=[
+      "爐火是否確實關閉","瓦斯偵測器是否正常","瓦斯遮斷系統是否正常","廚房有無瓦斯洩漏異味",
+      "瓦斯分盤閥門是否確實關閉","滅火器壓力、外觀是否正常","瓦斯總筏是否確實關閉"
+    ];
+    const a=items.map(t=>({t, v:'NA (無此設備)'}));
+    a.push({t:'點檢員簽名', v:'NA'});
+    return join(a);
+  }
+  return '';
+}
+
+/* === 後台自動把關閉的子分頁視為完成 (含 mailText) === */
+function autoMarkDisabledSubTabsAsDone(mainKey){
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  if(!site || !vendor) return;
+  const formsCfg = getVendorFormsConfig(site, vendor);
+  if(!formsCfg) return;
+  const schedule = SCHEDULES.find(s=>s.key===mainKey);
+  schedule.subTabs.forEach(st=>{
+    if(!isSubTabEnabledByAdmin(mainKey, st.key, formsCfg)){
+      if(!formData[mainKey][st.key]){
+        formData[mainKey][st.key] = {
+          data:{},
+          mailText: buildNAFormMailText(st.key, mainKey)
+        };
+      }
+    }
+  });
+}
+
+/* === Nav 渲染 === */
+function renderMainNav(){
+  const wrap = document.getElementById('main-navbar');
+  wrap.innerHTML = SCHEDULES.map((s,i)=>`
+    <a href="#" class="main-tab${i===0?' active':''}" data-main="${s.key}"
+       onclick="switchMainTab('${s.key}');return false;">${s.label}</a>
+  `).join('');
+}
+function renderSubNav(mainKey, curSubKey){
+  const sch = SCHEDULES.find(s=>s.key===mainKey);
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  const formsCfg = (site && vendor) ? getVendorFormsConfig(site, vendor) : null;
+  const visible = (sch.subTabs||[]).filter(st=>isSubTabEnabledByAdmin(mainKey, st.key, formsCfg));
+  // 若目前的子頁已被關掉，跳到第一個可見子頁
+  if(visible.length && !visible.some(v=>v.key===curSubKey)){
+    currentSubTab = visible[0].key;
+    curSubKey = currentSubTab;
+  }
+  const html = visible.map(st=>`
+    <a href="#" class="sub-tab${curSubKey===st.key?' active':''} ${formData[mainKey][st.key]?'done-sub':''}"
+       data-sub="${st.key}"
+       onclick="switchSubTab('${st.key}');return false;">
+      ${st.label}${formData[mainKey][st.key] ? '<span class="done-indicator">✓</span>' : ''}
+    </a>
+  `).join('');
+  document.getElementById('sub-navbar').innerHTML = html;
+}
+function switchMainTab(mainKey){
+  currentMainTab = mainKey;
+  autoMarkDisabledSubTabsAsDone(mainKey);
+  const idx = SCHEDULES.findIndex(s=>s.key===mainKey);
+  document.querySelectorAll('.main-navbar a').forEach((el,i)=>{
+    el.classList.toggle('active', i===idx);
+  });
+  // 找第一個可見 subtab
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  const formsCfg = (site && vendor) ? getVendorFormsConfig(site, vendor) : null;
+  const visible = SCHEDULES[idx].subTabs.filter(st=>isSubTabEnabledByAdmin(mainKey, st.key, formsCfg));
+  const firstSub = visible.length ? visible[0].key : SCHEDULES[idx].subTabs[0].key;
+  currentSubTab = firstSub;
+  renderSubNav(mainKey, firstSub);
+  switchSubTab(firstSub);
+}
+function switchSubTab(subKey){
+  currentSubTab = subKey;
+  document.querySelectorAll('.sub-navbar a').forEach(el=>{
+    el.classList.toggle('active', el.getAttribute('data-sub')===subKey);
+  });
+  renderTabPage(currentMainTab, subKey);
+}
+
+/* === 檢查項目文字（早晚、夜） === */
+const VENDOR_CHECK_ITEMS_EARLY = [
+  "穿著相同的制服","口罩確實蓋住口鼻","帽網確實包覆所有頭髮","手上無配戴任何飾品","手部傷口有確實處理包覆",
+  "不可於備餐區有飲食行為","備餐人員穿乾淨白色防水圍裙、雨鞋","備餐區沒有私人物品 應放置於置物櫃中","置物櫃擺放整齊 不零亂",
+  "冷藏區溫度（0~7度）","冷凍區溫度（-18度以下）","食品外包裝標示有效期限","食品外包裝清楚標示進貨日期","餐具、食材離地5cm以上",
+  "冰箱、工作區內沒有紙箱","蔬菜類進貨時不得夾雜泥土","食材無堆疊","餐具、食材僅留2~3天備量","肉品、海鮮皆附國家認可證書",
+  "冰箱內部有清楚分區標示","無過期食品","食材先進先出",
+  "每道菜留200g檢體 標示名稱、餐別、日期 保留48小時",
+  "使用白色抹布並以部分顏色區分：生食(藍)、熟食/櫃檯(紅)、爐灶(綠) 過髒立即更換",
+  "送貨廠商不得在備餐時間送貨","處理熟食需配戴乾淨不透水手套","生熟食料理區有明確區隔","廚餘確實清除","解凍食物時使用小量流水"
+];
+const VENDOR_CHECK_ITEMS_NIGHT = [
+  "抹布使用滾水消毒5~10分鐘","集渣槽","地板無菜渣、廚餘","工作檯整理乾淨不凌亂","調味料、食材確實加蓋",
+  "各式碗盤有確實包覆加蓋收放","煙罩排水閥 向下開啟3~5分鐘排水","食材（生食、熟食、調味料）放進冰箱皆有確實包覆",
+  "籃框保持清潔並按顏色分類放置","所有器具徹底清洗過一遍","所有用具（塑膠除外）收納至烘乾消毒櫃 以110℃烘30分鐘","關閉煙罩水箱水閥"
+];
+
+/* === Tab 內容渲染 === */
+function renderTabPage(mainKey, subKey){
+  document.getElementById('mailContentBox').style.display='none';
+  const fieldsBlock = document.getElementById('commonFields');
+  const tabContent = document.getElementById('tabContent');
+  const notice = document.getElementById('notice');
+  const mainSubmitBtn = document.getElementById('mainSubmitBtn');
+
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  const formsCfg = (site && vendor) ? getVendorFormsConfig(site, vendor) : null;
+
+  // 若後台把此 sub 變為「無」直接顯示完成提示
+  if(mainKey!=='penalty' && formsCfg && !isSubTabEnabledByAdmin(mainKey, subKey, formsCfg)){
+    tabContent.innerHTML = `<div class="explain-box" style="color:grey;text-align:center;">此項目後台設定為「無」，已視為完成。</div>`;
+    notice.textContent = '';
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // 取得選取的 vendor 設備設定，若找不到則用預設空值
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  let vendorConfig = vendors.find(v=>v.site===site && v.name===vendor) || {
+    refrigeratorA:0, refrigeratorB:0, constantTemp:false, storageRoom:false, isIphone:false
+  };
+
+  // === 罰款頁面 ===
+  if(mainKey==='penalty'){
+    fieldsBlock.style.display='none';
+    notice.textContent='';
+    tabContent.innerHTML=`
+      <div class="explain-box" style="margin-bottom:18px;">
+        <b>每日需完成事項：</b>
+        <ul>
+          <li>「每日使用前－早」12:00 前須完成，並送出本時段所有點檢紀錄。</li>
+          <li>「每日使用前－晚」18:00 前須完成，並送出本時段所有點檢紀錄。</li>
+          <li>「晚間下班離開前」21:00 前須完成，並送出本時段所有點檢紀錄。</li>
+        </ul>
+        <b>注意事項：</b>
+        <ul>
+          <li>建議各廠商指派具備專業經驗的專職人員擔任點檢員。</li>
+          <li><span style="color:#f44336;font-weight:600;">請點檢員確實執行檢查，並於相關文件如實記載，且於點檢員簽名欄位下署名。未如實點檢、記載不實或未正確署名，聯發科保留依相關法律追究責任之權利。</span></li>
+        </ul>
+        <div style="margin-top:8px;color:#f44336;font-weight:600;">如未確實執行以上事項，將依下方罰則辦理，各廠商及點檢員並無異議。</div>
+      </div>
+      <div class="explain-box" style="margin-bottom:18px;">
+        <b>說明：</b>廠商新人或替代人員入職均需完成餐飲人員新人訓，並親自簽名確認充分了解各項廚房作業規範，始得進入廚房作業。
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:7%;">項次</th><th style="width:68%;">規定項目</th><th style="width:25%;">違約罰款(元)</th></tr>
+        </thead>
+        <tbody>${penaltyRowsHTML}</tbody>
+      </table>
+    `;
+    mainSubmitBtn.style.display='none';
+    renderSubNav(mainKey, subKey);
+    return;
+  }else{
+    fieldsBlock.style.display='';
+    mainSubmitBtn.style.display='';
+  }
+
+  /* ----------------------- 各子頁內容 ----------------------- */
+  // ----- 冷藏/冷凍溫度紀錄 -----
+  if(subKey==='cold'){
+    notice.textContent = "請完成冷藏/冷凍溫度紀錄！";
+    const maxA = vendorConfig.refrigeratorA||0;
+    const maxB = vendorConfig.refrigeratorB||0;
+    const maxCount = Math.max(maxA, maxB);
+    let rows = '';
+
+    if(maxCount===0 && !vendorConfig.constantTemp){
+      rows = `<tr><td colspan="5" style="color:grey;">此廠商無冷藏/冷凍設備需紀錄。</td></tr>`;
+    }else{
+      for(let i=1;i<=maxCount;i++){
+        const Aactive = i<=maxA;
+        const Bactive = i<=maxB;
+        rows += `
+        <tr>
+          <td>A${i}</td>
+          <td><input type="text" placeholder="${Aactive?'A'+i+'冷藏溫度':'NA'}" ${Aactive?'required':''} data-title="A${i}冷藏溫度" name="A${i}_r" ${Aactive?'':'disabled style="background-color:#f0f0f0;"'}></td>
+          <td>B${i}</td>
+          <td><input type="text" placeholder="${Bactive?'B'+i+'冷凍溫度':'NA'}" ${Bactive?'required':''} data-title="B${i}冷凍溫度" name="B${i}_f" ${Bactive?'':'disabled style="background-color:#f0f0f0;"'}></td>
+          <td><input type="text" placeholder="異常備註" data-title="A${i}/B${i}異常備註" name="A${i}_B${i}_note"></td>
+        </tr>`;
+      }
+    }
+    
+    const warnBox = `
+  <div class="explain-box highlight-orange" style="margin-bottom:16px;">
+    <div>1. 溫度紀錄應於每日使用前記錄<br>2. 冷藏溫度標準值：0~7℃；冷凍溫度標準值：-18℃(含)以下</div>
+  </div>
+   `;
+    let table1 = `
+      <table class="data-table">
+        <thead><tr><th>冷藏設備名稱</th><th>冷藏溫度(°C)</th><th>冷凍設備名稱</th><th>冷凍溫度(°C)</th><th>異常備註</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+    // 常溫設備（若有）
+    let extra = '';
+    if(vendorConfig.constantTemp){
+      extra = `
+        <div class="explain-box highlight-orange" style="margin-bottom:16px;">
+          <div>1. 溫度紀錄應於每日使用前記錄<br>2. 常溫溫度：21~23°C</div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>常溫設備名稱</th><th>常溫溫度(°C)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>常溫1</td>
+              <td><input type="text" placeholder="常溫1溫度" required data-title="常溫1冷藏溫度" name="constant1_r"></td>
+            </tr>
+          </tbody>
+        </table>`;
+    }
+
+    const signature = `
+      <div class="signature-group">
+        <label>點檢員簽名：</label>
+        <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+      </div>
+      <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+
+    tabContent.innerHTML = warnBox + table1 + extra + signature;
+
+    // 若已有儲存資料，回填
+    const saved = formData[mainKey][subKey];
+    if(saved){
+      const inputs = tabContent.querySelectorAll('input,select,textarea');
+      inputs.forEach(el=>{
+        if(el.name && saved.data[el.name]!==undefined){
+          el.value = saved.data[el.name];
+        }
+      });
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // ----- 廠商自我檢查 -----
+  if(subKey==='vendor'){
+    notice.textContent = "請完成餐飲廠商自我檢查紀錄！";
+    const items = (mainKey==='early') ? VENDOR_CHECK_ITEMS_EARLY : VENDOR_CHECK_ITEMS_NIGHT;
+    const rows = items.map((item,ix)=>`
+      <tr>
+        <td>${item}</td>
+        <td>
+          <select required data-title="${item}" name="vendor_item${ix}">
+            <option value="">請選擇</option>
+            <option value="V">V</option>
+            <option value="X">X</option>
+            <option value="NA">NA</option>
+          </select>
+        </td>
+      </tr>`).join('');
+    const html = `
+      <table class="data-table">
+        <thead><tr><th>檢查項目</th><th>正常與否<br>(正常: V, 異常: X, NA)</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="signature-group">
+        <label>點檢員簽名：</label>
+        <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+      </div>
+      <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+    tabContent.innerHTML = html;
+
+    // 回填
+    const saved = formData[mainKey][subKey];
+    if(saved){
+      const inputs = tabContent.querySelectorAll('input,select,textarea');
+      inputs.forEach(el=>{
+        if(el.name && saved.data[el.name]!==undefined){
+          el.value = saved.data[el.name];
+        }
+      });
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // ----- 油脂品質檢查 -----
+  if(subKey==='oil'){
+    notice.textContent="請完成油脂品質檢查紀錄！";
+    const html = `
+      <div class="explain-box"><ul><li><span class="highlight-orange">有使用油炸油者，請每日早上完成油脂酸價檢測 確實記錄換油情況。酸價 ≧2.0 換油。</span></li></ul></div>
+      <table class="data-table">
+        <thead><tr><th style="width:34%">檢查項目</th><th style="width:66%">檢查內容/填寫選項</th></tr></thead>
+        <tbody>
+          <tr><td>今天將使用油炸油</td><td>
+            <select id="useOilSelect" required data-title="今天將使用油炸油" name="useOil">
+              <option value="">請選擇</option><option value="Yes">Yes</option><option value="No">No</option>
+            </select></td></tr>
+          <tr><td>油顏色太深</td><td><select required data-title="油顏色太深" name="oil0"><option value="">請選擇</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td>油品泡沫</td><td><select required data-title="油品泡沫" name="oil1"><option value="">請選擇</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td>油炸油發煙</td><td><select required data-title="油炸油發煙" name="oil2"><option value="">請選擇</option><option>Yes</option><option>No</option></select></td></tr>
+          <tr><td>酸價檢測（mgKOH/g）</td><td><select required data-title="酸價檢測（mgKOH/g）" name="acid"><option value="">請選擇</option><option>&lt;2</option><option>≧2</option></select></td></tr>
+          <tr><td>今日是否更換全新油炸油</td><td><select required data-title="今日是否更換全新油炸油" name="oilChangeToday"><option value="">請選擇</option><option value="Yes">Yes</option><option value="No">No</option></select></td></tr>
+        </tbody>
+      </table>
+      <div class="signature-group">
+        <label>點檢員簽名：</label>
+        <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+      </div>
+      <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+    tabContent.innerHTML = html;
+
+    // 根據「今天將使用油炸油」的值，啟用/停用其餘欄位
+    setTimeout(()=>{
+      const useOil = document.getElementById('useOilSelect');
+      const other = [
+        tabContent.querySelector('select[name="oil0"]'),
+        tabContent.querySelector('select[name="oil1"]'),
+        tabContent.querySelector('select[name="oil2"]'),
+        tabContent.querySelector('select[name="acid"]'),
+        tabContent.querySelector('select[name="oilChangeToday"]')
+      ];
+      const toggle = ()=>{
+        const disable = useOil.value==="No";
+        other.forEach(f=>{ if(f){ f.disabled=disable; f.style.backgroundColor=disable?'#f0f0f0':''; if(disable) f.value=''; }});
+      };
+      useOil.addEventListener('change',toggle);
+      toggle();
+    },0);
+
+    // 回填
+    const saved = formData[mainKey][subKey];
+    if(saved){
+      const inputs = tabContent.querySelectorAll('input,select,textarea');
+      inputs.forEach(el=>{ if(el.name && saved.data[el.name]!==undefined) el.value=saved.data[el.name]; });
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // ----- 庫房溫度 -----
+  if(subKey==='storage'){
+    notice.textContent="請完成庫房溫度紀錄！";
+    if(!vendorConfig.storageRoom){
+      tabContent.innerHTML = `
+        <div class="explain-box" style="color:grey;text-align:center;">此廠商無庫房 無需填寫此項目。</div>
+        <div class="signature-group">
+          <label>點檢員簽名：</label>
+          <input type="text" data-title="點檢員簽名" name="signature" value="NA" disabled style="background-color:#f0f0f0;">
+        </div>
+        <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+    }else{
+      tabContent.innerHTML = `
+        <div class="explain-box"><ul><li><span class="highlight-orange">1.溫度標準值：28°C (含)以下；相對濕度(RH)標準值：70% (含)以下。</span></li></ul></div>
+        <table class="data-table">
+          <thead><tr><th>溫度(°C)</th><th>濕度(%)</th><th>異常/備註</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><input type="text" placeholder="庫房溫度" data-title="溫度(°C)" name="temp"></td>
+              <td><input type="text" placeholder="庫房濕度" data-title="濕度(%)" name="humi"></td>
+              <td><input type="text" placeholder="異常處理或備註" data-title="異常處理/備註" name="comment"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="signature-group">
+          <label>點檢員簽名：</label>
+          <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+        </div>
+        <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+      const saved = formData[mainKey][subKey];
+      if(saved){
+        const inputs = tabContent.querySelectorAll('input,select,textarea');
+        inputs.forEach(el=>{ if(el.name && saved.data[el.name]!==undefined) el.value=saved.data[el.name]; });
+      }
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // ----- 水表紀錄 -----
+  if(subKey==='water'){
+    notice.textContent="請完成水表紀錄！";
+    tabContent.innerHTML = `
+      <div class="explain-box">
+        <ul>
+          <li>1. 請每日於晚間下班離開前記錄當日水用量。</li>
+          <li>2. 離開廚房前請檢查所有水源是否關閉，如有異常請立刻通知廠區廠務人員。</li>
+          <li>3. 請確實紀錄水表度數及抄表時間。</li>
+          <li>4. 若無該檢查項目時，請填寫「NA」。</li>
+        </ul>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>抄表度數</th><th>異常/備註</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><input type="text" placeholder="請輸入抄表度數" data-title="抄表度數" name="water"></td>
+            <td><input type="text" placeholder="異常/備註" data-title="異常/備註" name="comment"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="signature-group">
+        <label>點檢員簽名：</label>
+        <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+      </div>
+      <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+    const saved = formData[mainKey][subKey];
+    if(saved){
+      const inputs = tabContent.querySelectorAll('input,select,textarea');
+      inputs.forEach(el=>{ if(el.name && saved.data[el.name]!==undefined) el.value=saved.data[el.name]; });
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+
+  // ----- 安全檢查 -----
+  if(subKey==='safety'){
+    notice.textContent="請完成廚房安全檢查紀錄！";
+    const rows = [
+      {item:"爐火是否確實關閉"},
+      {item:"瓦斯偵測器是否正常"},
+      {item:"瓦斯遮斷系統是否正常"},
+      {item:"廚房有無瓦斯洩漏異味"},
+      {item:"瓦斯分盤閥門是否確實關閉"},
+      {item:"滅火器壓力、外觀是否正常"},
+      {item:"瓦斯總筏是否確實關閉<br><span style='font-size:0.92em;color:#888;'>(非負責櫃位填寫NA)</span>"}
+    ];
+    const tbody = rows.map((r,i)=>`
+      <tr>
+        <td>${r.item}</td>
+        <td>
+          <select required data-title="${r.item.replace(/<[^>]+>/g,'')}" name="safe${i}">
+            <option value="">請選擇</option>
+            <option value="V">V</option>
+            <option value="X">X</option>
+            <option value="NA">NA</option>
+          </select>
+        </td>
+      </tr>`).join('');
+    tabContent.innerHTML = `
+      <div class="explain-box">
+        <ul>
+          <li>1. 檢查結果異常請立即通知承辦人</li>
+          <li>2. 檢查異常採取之矯正措施內容</li>
+          <li>3. 檢查方式：目視</li>
+          <li>4. 若無該檢查項目時，請填寫「NA」。</li>
+        </ul>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>檢查項目</th><th>正常與否<br>(正常: V, 異常: X, NA)</th></tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+      <div class="signature-group">
+        <label>點檢員簽名：</label>
+        <input type="text" placeholder="請輸入您的姓名（簽名）" required data-title="點檢員簽名" name="signature">
+      </div>
+      <button class="tab-done-btn" onclick="saveSubForm(event,'${mainKey}','${subKey}')">完成本項目</button>`;
+    const saved = formData[mainKey][subKey];
+    if(saved){
+      const inputs = tabContent.querySelectorAll('input,select,textarea');
+      inputs.forEach(el=>{ if(el.name && saved.data[el.name]!==undefined) el.value=saved.data[el.name]; });
+    }
+    renderSubNav(mainKey, subKey);
+    return;
+  }
+}
+
+/* ==============================
+   4?? 完成本項目（產生 mailText）
+============================== */
+function saveSubForm(ev, mainKey, subKey){
+  ev.preventDefault();
+  const wrap = document.getElementById('tabContent');
+  const inputs = Array.from(wrap.querySelectorAll('input,select,textarea'));
+  let fail=false, collected={};
+
+  for(const el of inputs){
+    const req=el.required, val=el.value.trim();
+    if(req && !el.disabled && (val==='' || val==='請選擇')){
+      fail=true; break;
+    }
+    if(el.name){
+      collected[el.name] = (el.disabled || val==='' || val==='請選擇') ? 'NA' : val;
+    }
+  }
+  if(fail){ alert('請填寫所有欄位'); return; }
+
+  // 計算 mailText
+  const mailFields=[];
+  if(subKey==='cold'){
+    mailFields.push({title:'點檢員簽名', value:collected['signature']||'NA'});
+
+    // 常溫（若有）
+    const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+    const site=document.getElementById('site').value;
+    const vendor=document.getElementById('vendor').value;
+    const vc=vendors.find(v=>v.site===site && v.name===vendor)||{};
+    if(vc.constantTemp){
+      mailFields.push({title:'常溫1冷藏溫度', value:collected['constant1_r']||'NA'});
+    }else{
+      mailFields.push({title:'常溫1冷藏溫度', value:'NA (無此設備)'});
+    }
+
+    const maxA = vc.refrigeratorA||0;
+    const maxB = vc.refrigeratorB||0;
+    for(let i=1;i<=7;i++){
+      if(i<=maxA) mailFields.push({title:`A${i}冷藏溫度`, value:collected[`A${i}_r`]||'NA'});
+      else       mailFields.push({title:`A${i}冷藏溫度`, value:'NA (無此設備)'});
+
+      if(i<=maxB) mailFields.push({title:`B${i}冷凍溫度`, value:collected[`B${i}_f`]||'NA'});
+      else       mailFields.push({title:`B${i}冷凍溫度`, value:'NA (無此設備)'});
+
+      if(i<=maxA || i<=maxB){
+        mailFields.push({title:`A${i}/B${i}異常備註`, value:collected[`A${i}_B${i}_note`]||'NA'});
+      }else{
+        mailFields.push({title:`A${i}/B${i}異常備註`, value:'NA (無此設備)'});
+      }
+    }
+  }else if(subKey==='storage'){
+    mailFields.push({title:'點檢員簽名', value:collected['signature']||'NA'});
+    const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+    const site=document.getElementById('site').value;
+    const vendor=document.getElementById('vendor').value;
+    const vc=vendors.find(v=>v.site===site && v.name===vendor)||{};
+    if(vc.storageRoom){
+      mailFields.push({title:'溫度(°C)', value:collected['temp']||'NA'});
+      mailFields.push({title:'濕度(%)', value:collected['humi']||'NA'});
+      mailFields.push({title:'異常處理/備註', value:collected['comment']||'NA'});
+    }else{
+      mailFields.push({title:'溫度(°C)', value:'NA (無此設備)'});
+      mailFields.push({title:'濕度(%)', value:'NA (無此設備)'});
+      mailFields.push({title:'異常處理/備註', value:'NA (無此設備)'});
+    }
+  }else{
+    // 其他子頁直接把所有欄位寫入
+    for(const el of inputs){
+      const title = el.getAttribute('data-title');
+      if(title){
+        mailFields.push({title, value:collected[el.name]||'NA'});
+      }
+    }
+  }
+
+  const mailText = mailFields.map(f=>`${f.title}，${f.value}`).join('；\n');
+  formData[mainKey][subKey] = {data:collected, mailText};
+
+  renderSubNav(mainKey, subKey);
+
+  // 自動跳下一個未完成的子頁
+  const schTabs = SCHEDULES.find(s=>s.key===mainKey).subTabs;
+  const curIdx = schTabs.findIndex(t=>t.key===subKey);
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  const formsCfg = (site && vendor) ? getVendorFormsConfig(site, vendor) : null;
+  let nextFound=false;
+  for(let i=curIdx+1;i<schTabs.length;i++){
+    const nextKey = schTabs[i].key;
+    // 若後台關掉，直接視為完成
+    if(formsCfg && !isSubTabEnabledByAdmin(mainKey, nextKey, formsCfg)){
+      if(!formData[mainKey][nextKey]){
+        formData[mainKey][nextKey] = {data:{}, mailText: buildNAFormMailText(nextKey, mainKey)};
+      }
+      continue;
+    }
+    if(!formData[mainKey][nextKey]){
+      switchSubTab(nextKey);
+      nextFound=true;
+      break;
+    }
+  }
+  if(!nextFound) alert("本時段所有檢查項目已完成!");
+}
+
+/* ==============================
+   5?? 下拉選單同步
+============================== */
+function syncVendorMenus(){
+  const siteSel = document.getElementById('site');
+  const vendorSel = document.getElementById('vendor');
+  const vendorEmail = document.getElementById('vendorEmail');
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+
+  const sites = [...new Set(vendors.map(v=>v.site))].sort();
+  siteSel.innerHTML = '<option value="">請選擇</option>' + sites.map(s=>`<option value="${s}">${s}</option>`).join('');
+
+  // Site 改變
+  siteSel.onchange = function(){
+    const s = siteSel.value;
+    const vs = vendors.filter(v=>v.site===s);
+    vendorSel.innerHTML = '<option value="">請選擇</option>' + vs.map(v=>`<option value="${v.name}">${v.name}</option>`).join('');
+    vendorSel.value=''; vendorEmail.value='';
+
+    // 清除 iPhone 區塊（避免舊資料殘留）
+    const iphoneCheck = document.getElementById('isIphoneCheckbox');
+    const iphoneNote  = document.getElementById('isIphoneNote');
+    if(iphoneCheck){ iphoneCheck.checked=false; iphoneNote.textContent=''; }
+
+    document.getElementById('tabContent').innerHTML='';
+    document.getElementById('notice').textContent='請選擇廠商以載入點檢項目。';
+    renderSubNav(currentMainTab, currentSubTab);
+  };
+
+  // Vendor 改變
+  vendorSel.onchange = function(){
+    const s = siteSel.value, n = vendorSel.value;
+    const v = vendors.find(x=>x.site===s && x.name===n);
+    // 直接使用已正規化過的 email
+    vendorEmail.value = (v && v.email) ? v.email : '';
+
+    // **iPhone 勾選區塊** 顯示與同步
+    const iphoneCheck = document.getElementById('isIphoneCheckbox');
+    const iphoneNote  = document.getElementById('isIphoneNote');
+    if(v && iphoneCheck){
+      iphoneCheck.checked = !!v.isIphone;
+      iphoneNote.textContent = v.isIphone
+        ? "此廠商預設用 iPhone 裝置寄信，email 分隔符為「,」"
+        : "使用非 iPhone 裝置，分隔符為「;」。";
+      // 勾選變更即時寫回 localStorage
+      iphoneCheck.onchange = ()=>{
+        v.isIphone = iphoneCheck.checked;
+        const all = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+        const idx = all.findIndex(x=>x.site===s && x.name===n);
+        if(idx>=0){
+          all[idx].isIphone = v.isIphone;
+          localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(all));
+        }
+        iphoneNote.textContent = iphoneCheck.checked
+          ? "此廠商預設用 iPhone 裝置寄信，email 分隔符為「,」"
+          : "使用非 iPhone 裝置，分隔符為「;」。";
+      };
+    }
+
+    // 若已選取廠商，初始化自動完成後台「無」的子頁
+    if(currentMainTab!=='penalty' && s && n){
+      autoMarkDisabledSubTabsAsDone(currentMainTab);
+      renderSubNav(currentMainTab, currentSubTab);
+      renderTabPage(currentMainTab, currentSubTab);
+    }else if(currentMainTab!=='penalty'){
+      document.getElementById('tabContent').innerHTML='';
+      document.getElementById('notice').textContent='請選擇廠商以載入點檢項目。';
+    }
+  };
+}
+
+/* ==============================
+   6?? 送出信件（依 iPhone 判斷分隔符）
+============================== */
+document.getElementById('mainSubmitBtn').onclick = function(){
+  const date = document.getElementById('date').value;
+  const site = document.getElementById('site').value;
+  const vendor = document.getElementById('vendor').value;
+  const vendorEmail = document.getElementById('vendorEmail').value;
+  if(!date||!site||!vendor||!vendorEmail){
+    alert('請先填寫上方 日期、辦公區、廠商名稱、EMAIL'); return;
+  }
+
+  // night 時段若全部「無」則不寄信
+  if(currentMainTab==='night'){
+    const cfg = getVendorFormsConfig(site, vendor);
+    if(cfg && !cfg.vendor && !cfg.water && !cfg.safety){
+      alert("晚間下班離開前：後台三項皆設定為無，視為已完成，無需寄送郵件。");
+      return;
+    }
+  }
+
+  // 確保已把後台關掉的子頁視為完成
+  autoMarkDisabledSubTabsAsDone(currentMainTab);
+
+  // 檢查所有子頁是否都有資料
+  const sch = SCHEDULES.find(s=>s.key===currentMainTab);
+  for(const sub of sch.subTabs){
+    if(!formData[currentMainTab][sub.key]){
+      alert(`尚未完成【${sub.label}】，請點入填寫並按「完成本項目」!`);
+      return;
+    }
+  }
+
+  // 組內容
+  const contentList = sch.subTabs.map(sub=>`【${sub.label}】\n${formData[currentMainTab][sub.key].mailText}\n`);
+
+  // 記錄至 records
+  const records = JSON.parse(localStorage.getItem(LS_RECORDS_KEY)||'[]');
+  sch.subTabs.forEach(sub=>{
+    records.push({
+      date,
+      time:new Date().toLocaleTimeString(),
+      site,
+      vendor,
+      email:vendorEmail,
+      stage:sub.label,
+      content:formData[currentMainTab][sub.key].mailText
+    });
+  });
+  localStorage.setItem(LS_RECORDS_KEY, JSON.stringify(records));
+
+  // ======== 產生 mailto ========
+  const subject = encodeURIComponent(`${sch.label}_${vendor}（${date}，${site}）`);
+  const body = encodeURIComponent(
+    `日期，${date}；\n辦公區，${site}；\n廠商名稱，${vendor}；\nEMAIL，${vendorEmail}；\n——————\n${contentList.join('\n')}`
+  );
+
+  const mailInfo = getMailInfo(site);
+  const baseTo = mailInfo.mailto;
+  const ccRaw   = mailInfo.cc;
+
+  // 依 iPhone 判斷分隔符號
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const curVendor = vendors.find(v=>v.site===site && v.name===vendor);
+  const separator = (curVendor && curVendor.isIphone) ? ',' : ';';
+
+  // 1?? 把廠商 Email 先清理半形分號，並依 iPhone 需要轉成逗號
+  let vendorMail = vendorEmail.replace(/；/g, ';');
+  if (curVendor && curVendor.isIphone) {
+    vendorMail = vendorMail.replace(/;/g, ',');
+  }
+
+  const recipients = [baseTo, vendorMail].filter(x=>x).join(separator);
+  let mailtoLink = `mailto:${recipients}?subject=${subject}&body=${body}`;
+  if(ccRaw){
+    const formattedCc = ccRaw.replace(/[,;]+/g, separator);
+    mailtoLink += `&cc=${formattedCc}`;
+  }
+
+  const mcbox = document.getElementById('mailContentBox');
+  mcbox.innerHTML = `
+    <b>寄件人</b>：${[baseTo, vendorMail].filter(x=>x).join(',')}<br>
+    ${ccRaw?'<b>CC</b>：'+ccRaw+'<br>':''}
+    <b>標題</b>：${decodeURIComponent(subject)}<br>
+    <b>內容</b>：<br>${decodeURIComponent(body)}
+    <div style="margin-top:13px;">
+      <button onclick="navigator.clipboard.writeText(this.parentNode.parentNode.innerText);alert('已複製內容，可直接貼到郵件喔！');"
+        style="font-size:1rem;padding:6px 20px;border-radius:9px;background:#ffd55f;color:#222;">複製內容</button>
+    </div>`;
+  mcbox.style.display='block';
+  mcbox.scrollIntoView({behavior:'smooth'});
+  setTimeout(()=>{ window.location.href = mailtoLink; },500);
+};
+
+function getMailInfo(site){
+  switch(site){
+    case 'HC-AB': return {mailto:'', cc:'phoeby.chen@mediatek.com;cathy618@mail.7-11.com.tw;ya52645@yahoo.com.tw;alan-cc.hu@mediatek.com'};
+    case 'HC-C':
+    case 'HC-V': return {mailto:'tzu-shan.tsao@mediatek.com', cc:'wesley.lai@mediatek.com;phoeby.chen@mediatek.com;alan-cc.hu@mediatek.com'};
+    case 'HC-D': return {mailto:'tara.ciou@mediatek.com', cc:'wesley.lai@mediatek.com;phoeby.chen@mediatek.com;alan-cc.hu@mediatek.com'};
+    case 'HC-E': return {mailto:'ariel.kng@mediatek.com', cc:'wesley.lai@mediatek.com;phoeby.chen@mediatek.com;alan-cc.hu@mediatek.com'};
+    case 'TP-C': return {mailto:'catherine.sung@mediatek.com', cc:'sophia.mao@mediatek.com;phoeby.chen@mediatek.com;alan-cc.hu@mediatek.com'};
+    case 'TP-R':
+    case 'TP-X': return {mailto:'sophia.mao@mediatek.com', cc:'sophia.mao@mediatek.com;phoeby.chen@mediatek.com;alan-cc.hu@mediatek.com'};
+    default: return {mailto:'', cc:''};
+  }
+}
+
+/* ==============================
+   7?? 後台管理功能
+============================== */
+const ADMIN_DEFAULT = [{user:'admin', pwd:'12345'}];
+let adminLoginUser = null;
+
+/* ---- 開關後台 ---- */
+document.getElementById('openAdminBtn').onclick=()=>{ document.getElementById('adminModal').style.display='block'; showAdminLogin(); };
+document.getElementById('closeAdmin').onclick=()=>{
+  document.getElementById('adminModal').style.display='none';
+  document.getElementById('adminLoginPanel').innerHTML='';
+  document.getElementById('adminContentPanel').innerHTML='';
+};
+
+/* ---- 登入畫面 ---- */
+function showAdminLogin(){
+  document.getElementById('adminLoginPanel').innerHTML=`
+    <div style="text-align:center;margin-bottom:22px;">
+      <b style="font-size:1.12rem;color:#d66400;">管理員登入</b>
+    </div>
+    <form id="adminLoginForm">
+      <label>帳號</label>
+      <input id="adminUser" type="text" autocomplete="username" required placeholder="admin"><br>
+      <label>密碼</label>
+      <input id="adminPwd" type="password" autocomplete="current-password" required placeholder="●●●●●"><br>
+      <button type="submit" class="admin-btn" style="width:100%;">登入</button>
+    </form>
+    <div id="adminLoginMsg"></div>
+  `;
+  document.getElementById('adminContentPanel').innerHTML='';
+  document.getElementById('adminLoginForm').onsubmit=function(e){
+    e.preventDefault();
+    const u=document.getElementById('adminUser').value.trim();
+    const p=document.getElementById('adminPwd').value.trim();
+    const admins=JSON.parse(localStorage.getItem(LS_ADMIN_KEY)||'null')||ADMIN_DEFAULT;
+    const ok=admins.some(a=>a.user===u && a.pwd===p);
+    if(ok){
+      adminLoginUser=u;
+      document.getElementById('adminLoginPanel').innerHTML='';
+      showAdminContent();
+    }else{
+      document.getElementById('adminLoginMsg').innerHTML='<span style="color:#f44336;">帳號或密碼錯誤</span>';
+    }
+  };
+}
+
+/* ---- 主內容 ---- */
+function showAdminContent(){
+  const panel=document.getElementById('adminContentPanel');
+  panel.innerHTML=`
+    <div style="text-align:right;margin-bottom:6px;">
+      <span style="color:#888;font-size:0.97rem;">使用者：${adminLoginUser}</span>
+      <button class="admin-btn sm" onclick="logoutAdmin()">登出</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+      <button class="admin-btn" onclick="adminNav('vendor')">廠商資料維護</button>
+      <button class="admin-btn" onclick="adminNav('equipment')">設備數量維護</button>
+      <button class="admin-btn" onclick="adminNav('forms')">表格維護</button>
+      <button class="admin-btn" onclick="adminNav('record')">點檢紀錄查詢</button>
+      <button class="admin-btn" onclick="adminNav('admin')">帳號管理</button>
+    </div>
+    <div style="margin-top:6px;color:#999;font-size:0.92rem;">V.2026.0.0.0</div>
+    <div id="adminSectionContent" style="margin-top:10px;"></div>
+  `;
+  adminNav('vendor');
+}
+window.logoutAdmin=()=>{ adminLoginUser=null; showAdminLogin(); };
+window.adminNav=function(section){
+  const div=document.getElementById('adminSectionContent');
+  if(section==='vendor')   adminVendorSection(div);
+  else if(section==='equipment') adminEquipmentSection(div);
+  else if(section==='forms')    adminFormsSection(div);
+  else if(section==='record')   adminRecordSection(div);
+  else if(section==='admin')    adminAccountSection(div);
+};
+
+/* ---------- 廠商資料維護 ---------- */
+function adminVendorSection(div){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const rows = vendors.map((v,i)=>`
+    <tr>
+      <td>${v.site||''}</td>
+      <td>${v.name||''}</td>
+      <td>${v.email||''}</td>
+      <td>${v.isIphone ? 'Y' : ''}</td>
+      <td>
+        <button class="admin-btn sm" onclick="editVendor(${i})">編輯</button>
+        <button class="admin-btn sm danger" onclick="delVendor(${i})">刪除</button>
+      </td>
+    </tr>`).join('');
+  div.innerHTML=`
+    <div class="admin-section">
+      <b style="font-size:1.13rem;">廠商資料維護</b>
+      <button class="admin-btn sm" onclick="newVendor()">新增廠商</button>
+      <table class="admin-table">
+        <thead>
+          <tr><th>辦公區</th><th>廠商名稱</th><th>廠商 EMAIL</th><th>iPhone 裝置</th><th>操作</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* 新增廠商 */
+window.newVendor=function(){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const allSites = [...new Set(EXCEL_VENDORS.map(v=>v.site))];
+  const defaultSite = allSites[0];
+  const nameList = site=>EXCEL_VENDORS.filter(v=>v.site===site).map(v=>v.name);
+  const nameOptions = nameList(defaultSite);
+
+  adminShowModal('新增廠商',[
+    {label:'辦公區', name:'site', type:'select', options: allSites},
+    {label:'廠商名稱', name:'name', type:'select', options: nameOptions},
+    {label:'廠商 EMAIL（如有多位，請用分號「;」分隔）', name:'email', type:'email'},
+    {label:'是否為 iPhone 裝置', name:'isIphone', type:'checkbox', value:false}
+  ],(data)=>{
+    // ★★★★★ 檢查 Email
+    const emailChk = validateAndSanitizeEmails(data.email||'');
+    if (!emailChk.valid) {
+      alert('以下 Email 格式不正確，請修正後再送出:\n' + emailChk.invalids.join('\n'));
+      return;
+    }
+    data.email = emailChk.cleaned; // 正規化後儲存
+
+    vendors.push({
+      ...data,
+      refrigeratorA:0, refrigeratorB:0,
+      constantTemp:false, storageRoom:false,
+      isIphone: !!data.isIphone
+    });
+    localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(vendors));
+    adminNav('vendor');
+    syncVendorMenus();
+  },{linked:true, EXCEL_VENDORS});
+};
+
+/* 編輯廠商 */
+window.editVendor=function(i){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const v = vendors[i];
+  const allSites = [...new Set(EXCEL_VENDORS.map(vv=>vv.site))];
+  const nameList = site=>EXCEL_VENDORS.filter(vv=>vv.site===site).map(vv=>vv.name);
+  const siteOptions = allSites.includes(v.site) ? allSites : [...allSites, v.site];
+  const nameOptions = nameList(v.site);
+  if(!nameOptions.includes(v.name)) nameOptions.push(v.name);
+
+  adminShowModal('編輯廠商',[
+    {label:'辦公區', name:'site', type:'select', options: siteOptions, value:v.site},
+    {label:'廠商名稱', name:'name', type:'select', options: nameOptions, value:v.name},
+    {label:'廠商 EMAIL（如有多位，請用分號「;」分隔）', name:'email', type:'email', value:v.email},
+    {label:'是否為 iPhone 裝置', name:'isIphone', type:'checkbox', value:!!v.isIphone}
+  ],(data)=>{
+    // ★★★★★ 檢查 Email
+    const emailChk = validateAndSanitizeEmails(data.email||'');
+    if (!emailChk.valid) {
+      alert('以下 Email 格式不正確，請修正後再送出:\n' + emailChk.invalids.join('\n'));
+      return;
+    }
+    data.email = emailChk.cleaned; // 正規化後儲存
+
+    vendors[i] = {
+      ...vendors[i],
+      site:data.site,
+      name:data.name,
+      email:data.email,
+      isIphone: !!data.isIphone
+    };
+    localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(vendors));
+    adminNav('vendor');
+    syncVendorMenus();
+  },{linked:true, EXCEL_VENDORS});
+};
+
+/* 刪除廠商 */
+window.delVendor=function(i){
+  if(confirm('確定要刪除本廠商資料？')){
+    const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+    vendors.splice(i,1);
+    localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(vendors));
+    adminNav('vendor');
+    syncVendorMenus();
+  }
+};
+
+/* ---------- 設備數量維護 ---------- */
+function adminEquipmentSection(div){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const rows = vendors.map((v,i)=>`
+    <tr>
+      <td>${v.site||''}</td>
+      <td>${v.name||''}</td>
+      <td>${v.refrigeratorA??0}</td>
+      <td>${v.refrigeratorB??0}</td>
+      <td>${v.constantTemp?'有':'無'}</td>
+      <td>${v.storageRoom?'有':'無'}</td>
+      <td>${v.isIphone ? 'Y' : ''}</td>
+      <td><button class="admin-btn sm" onclick="editEquipmentConfig(${i})">編輯</button></td>
+    </tr>`).join('');
+  div.innerHTML=`
+    <div class="admin-section">
+      <b style="font-size:1.13rem;">設備數量維護</b>
+      <button class="admin-btn danger" style="float:right;margin-bottom:8px;" onclick="restoreVendorsDefault()">還原原廠設定</button>
+      <span style="color:#888;font-size:0.97rem;float:right;margin:8px 12px 0 0;">一鍵還原全部設備數量</span>
+      <table class="admin-table" style="clear:both;">
+        <thead>
+          <tr>
+            <th>辦公區</th><th>廠商名稱</th>
+            <th>冷藏冰箱(A)數量</th><th>冷凍冰箱(B)數量</th>
+            <th>常溫冰箱</th><th>庫房</th><th>iPhone 裝置</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* 編輯設備 */
+window.editEquipmentConfig=function(idx){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const v = vendors[idx];
+  adminShowModal('編輯設備數量',[
+    {label:'辦公區', name:'site', type:'text', value:v.site, readonly:true},
+    {label:'廠商名稱', name:'name', type:'text', value:v.name, readonly:true},
+    {label:'冷藏冰箱(A)數量', name:'refrigeratorA', type:'number', value:v.refrigeratorA??0, min:0, max:20},
+    {label:'冷凍冰箱(B)數量', name:'refrigeratorB', type:'number', value:v.refrigeratorB??0, min:0, max:20},
+    {label:'是否有常溫冰箱', name:'constantTemp', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(v.constantTemp)},
+    {label:'是否有庫房', name:'storageRoom', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(v.storageRoom)},
+    {label:'是否為 iPhone 裝置', name:'isIphone', type:'checkbox', value:!!v.isIphone}
+  ],(data)=>{
+    vendors[idx].refrigeratorA = parseInt(data.refrigeratorA);
+    vendors[idx].refrigeratorB = parseInt(data.refrigeratorB);
+    vendors[idx].constantTemp = data.constantTemp==='true';
+    vendors[idx].storageRoom = data.storageRoom==='true';
+    vendors[idx].isIphone = !!data.isIphone;
+    localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(vendors));
+    adminNav('equipment');
+    syncVendorMenus();
+  });
+};
+
+/* 還原原始設備 */
+window.restoreVendorsDefault=function(){
+  if(confirm("警告！這將會還原所有設備及 iPhone 設定，是否繼續？")){
+    localStorage.setItem(LS_VENDORS_KEY, JSON.stringify(EXCEL_VENDORS));
+    alert('已還原，將重新整理頁面');
+    location.reload();
+  }
+};
+
+/* ---------- 表格維護（子頁開關） ---------- */
+function getFormsMap(){
+  const forms = JSON.parse(localStorage.getItem(LS_FORMS_KEY)||'[]');
+  const map={};
+  forms.forEach(f=>map[`${f.site}||${f.name}`]=f);
+  return map;
+}
+function adminFormsSection(div){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const fmap = getFormsMap();
+
+  const rows = vendors.map((v,i)=>{
+    const key = `${v.site}||${v.name}`;
+    const f = fmap[key] || {cold:true, vendor:true, oil:true, storage:true, water:true, safety:true};
+    return `
+      <tr>
+        <td>${v.site||''}</td>
+        <td>${v.name||''}</td>
+        <td>${f.cold?'有':'無'}</td>
+        <td>${f.vendor?'有':'無'}</td>
+        <td>${f.oil?'有':'無'}</td>
+        <td>${f.storage?'有':'無'}</td>
+        <td>${f.water?'有':'無'}</td>
+        <td>${f.safety?'有':'無'}</td>
+        <td><button class="admin-btn sm" onclick="editFormsConfig(${i})">編輯</button></td>
+      </tr>`;
+  }).join('');
+
+  div.innerHTML=`
+    <div class="admin-section">
+      <b style="font-size:1.13rem;">表格維護（子分頁開關）</b>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>辦公區</th><th>廠商名稱</th>
+            <th>冷藏/冷凍溫度記錄</th><th>廠商自我檢查表</th><th>油脂品質檢查</th><th>庫房溫度</th><th>水表紀錄</th><th>廚房安全檢查</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="margin-top:8px;color:#888;font-size:0.92rem;">
+        後台「無」→ 前端不顯示子分頁、視為完成；寄信內容列為 NA (無此設備)。<br>
+        特例：晚間下班離開前（vendor/water/safety）三項皆無 → 不寄信。
+      </div>
+    </div>
+  `;
+}
+
+/* 編輯表格維護 */
+window.editFormsConfig=function(idx){
+  const vendors = JSON.parse(localStorage.getItem(LS_VENDORS_KEY)||'[]');
+  const v = vendors[idx];
+  const forms = JSON.parse(localStorage.getItem(LS_FORMS_KEY)||'[]');
+  const key = `${v.site}||${v.name}`;
+  const cur = forms.find(x=>`${x.site}||${x.name}`===key) || {site:v.site, name:v.name, cold:true, vendor:true, oil:true, storage:true, water:true, safety:true};
+
+  adminShowModal('編輯表格維護',[
+    {label:'辦公區', name:'site', type:'text', value:cur.site, readonly:true},
+    {label:'廠商名稱', name:'name', type:'text', value:cur.name, readonly:true},
+    {label:'冷藏/冷凍溫度記錄', name:'cold', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.cold)},
+    {label:'廠商自我檢查表', name:'vendor', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.vendor)},
+    {label:'油脂品質檢查', name:'oil', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.oil)},
+    {label:'庫房溫度', name:'storage', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.storage)},
+    {label:'水表紀錄', name:'water', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.water)},
+    {label:'廚房安全檢查', name:'safety', type:'select', options:[{value:'true',text:'有'},{value:'false',text:'無'}], value:String(cur.safety)}
+  ],(data)=>{
+    const newItem = {
+      site:data.site, name:data.name,
+      cold: data.cold==='true',
+      vendor: data.vendor==='true',
+      oil: data.oil==='true',
+      storage: data.storage==='true',
+      water: data.water==='true',
+      safety: data.safety==='true'
+    };
+    const idxForm = forms.findIndex(x=>`${x.site}||${x.name}`===key);
+    if(idxForm>=0) forms[idxForm]=newItem; else forms.push(newItem);
+    localStorage.setItem(LS_FORMS_KEY, JSON.stringify(forms));
+    adminNav('forms');
+
+    // 前端即時套用
+    if(currentMainTab!=='penalty'){
+      autoMarkDisabledSubTabsAsDone(currentMainTab);
+      renderSubNav(currentMainTab, currentSubTab);
+      renderTabPage(currentMainTab, currentSubTab);
+    }
+  });
+};
+
+/* ---------- 點檢紀錄查詢 ---------- */
+function adminRecordSection(div){
+  const records = JSON.parse(localStorage.getItem(LS_RECORDS_KEY)||'[]');
+  records.sort((a,b)=>((b.date||'')+' '+(b.time||'')).localeCompare((a.date||'')+' '+(a.time||'')));
+
+  const from = window.adminRecordFrom||'';
+  const to   = window.adminRecordTo||'';
+  const filtered = records.filter(r=>{
+    const d = r.date||'';
+    if(from && d<from) return false;
+    if(to   && d>to)   return false;
+    return true;
+  });
+
+  div.innerHTML=`
+    <div class="admin-section">
+      <b style="font-size:1.13rem;">點檢紀錄查詢</b>
+      <span style="margin-left:22px;">
+        查詢區間：
+        <input type="date" id="recordFilterFrom" value="${from}"> ~
+        <input type="date" id="recordFilterTo" value="${to}">
+        <button class="admin-btn sm" id="recordFilterBtn">查詢</button>
+        <button class="admin-btn sm" id="resetFilterBtn">重設</button>
+      </span>
+      <table class="admin-table" style="margin-top:9px;">
+        <thead><tr><th>日期</th><th>時間</th><th>區域</th><th>廠商</th><th>EMAIL</th><th>時段/子項</th><th>內容</th></tr></thead>
+        <tbody>${filtered.map(r=>`
+          <tr>
+            <td>${r.date||''}</td>
+            <td>${r.time||''}</td>
+            <td>${r.site||''}</td>
+            <td>${r.vendor||''}</td>
+            <td>${r.email||''}</td>
+            <td>${r.stage||''}</td>
+            <td style="text-align:left;word-break:break-all;">${r.content||''}</td>
+          </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `;
+  setTimeout(()=>{
+    document.getElementById('recordFilterBtn').onclick=()=>{
+      window.adminRecordFrom=document.getElementById('recordFilterFrom').value;
+      window.adminRecordTo=document.getElementById('recordFilterTo').value;
+      adminRecordSection(div);
+    };
+    document.getElementById('resetFilterBtn').onclick=()=>{
+      window.adminRecordFrom=''; window.adminRecordTo=''; adminRecordSection(div);
+    };
+  },10);
+}
+
+/* ---------- 帳號管理 ---------- */
+function adminAccountSection(div){
+  const admins = JSON.parse(localStorage.getItem(LS_ADMIN_KEY)||'null')||ADMIN_DEFAULT;
+  div.innerHTML=`
+    <div class="admin-section">
+      <b style="font-size:1.13rem;">管理帳號維護</b>
+      <button class="admin-btn sm" onclick="newAdmin()">新增管理員</button>
+      <table class="admin-table"><thead><tr><th>帳號</th><th>操作</th></tr></thead>
+        <tbody>${admins.map((a,i)=>`
+          <tr><td>${a.user}</td>
+          <td>
+            <button class="admin-btn sm" onclick="editAdmin(${i})">編輯</button>
+            <button class="admin-btn sm danger" onclick="delAdmin(${i})">刪除</button>
+          </td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+window.newAdmin=function(){
+  adminShowModal('新增管理員',[
+    {label:'帳號', name:'user', type:'text'},
+    {label:'密碼', name:'pwd', type:'password'}
+  ],(data)=>{
+    const admins = JSON.parse(localStorage.getItem(LS_ADMIN_KEY)||'null')||ADMIN_DEFAULT;
+    admins.push(data);
+    localStorage.setItem(LS_ADMIN_KEY, JSON.stringify(admins));
+    adminNav('admin');
+  });
+};
+window.editAdmin=function(i){
+  const admins = JSON.parse(localStorage.getItem(LS_ADMIN_KEY)||'null')||ADMIN_DEFAULT;
+  const a = admins[i];
+  adminShowModal('編輯管理員',[
+    {label:'帳號', name:'user', type:'text', value:a.user},
+    {label:'密碼', name:'pwd', type:'password', value:a.pwd}
+  ],(data)=>{
+    admins[i]=data;
+    localStorage.setItem(LS_ADMIN_KEY, JSON.stringify(admins));
+    adminNav('admin');
+  });
+};
+window.delAdmin=function(i){
+  const admins = JSON.parse(localStorage.getItem(LS_ADMIN_KEY)||'null')||ADMIN_DEFAULT;
+  if(admins.length<=1){ alert('至少保留一位管理員'); return; }
+  if(confirm('確定要刪除本管理員帳號？')){
+    admins.splice(i,1);
+    localStorage.setItem(LS_ADMIN_KEY, JSON.stringify(admins));
+    adminNav('admin');
+  }
+};
+
+/* ---------- 共用 Modal（支援 checkbox） ---------- */
+function adminShowModal(title, fields, cb, opts){
+  const mask=document.createElement('div'); mask.className='admin-modal-mask';
+  const modal=document.createElement('div'); modal.className='admin-modal';
+  modal.innerHTML = `<h2>${title}</h2><form id="modalForm"></form>
+    <div style="text-align:right;">
+      <button class="admin-btn" id="modalOK">確認</button>
+      <button class="admin-btn danger" id="modalCancel">取消</button>
+    </div>`;
+  document.body.appendChild(mask);
+  document.body.appendChild(modal);
+  const form=modal.querySelector('#modalForm');
+
+  // 若需要「連動」(選站點後自動篩選名稱) 的話，把 options 轉成 {value,text}
+  const processed = fields.map(f=>{
+    const copy={...f};
+    if(f.type==='select' && Array.isArray(f.options)){
+      copy.options = f.options.map(o=> typeof o==='object' ? o : {value:o, text:o});
+    }
+    return copy;
+  });
+
+  processed.forEach(f=>{
+    const lbl=document.createElement('label');
+    lbl.textContent=f.label;
+    form.appendChild(lbl);
+    if(f.type==='select'){
+      const sel=document.createElement('select');
+      sel.name=f.name;
+      if(f.readonly) sel.disabled=true;
+      f.options.forEach(opt=>{
+        const optEl=document.createElement('option');
+        optEl.value=opt.value;
+        optEl.textContent=opt.text;
+        if(String(f.value)==String(opt.value)) optEl.selected=true;
+        sel.appendChild(optEl);
+      });
+      form.appendChild(sel);
+    }else if(f.type==='checkbox'){
+      const chk=document.createElement('input');
+      chk.type='checkbox';
+      chk.name=f.name;
+      if(f.value) chk.checked=true;
+      form.appendChild(chk);
+    }else{
+      const inp=document.createElement('input');
+      inp.type=f.type;
+      inp.name=f.name;
+      if(f.readonly) inp.readOnly=true;
+      inp.required=true;
+      inp.value=f.value||'';
+      if(f.min!==undefined) inp.min=f.min;
+      if(f.max!==undefined) inp.max=f.max;
+      form.appendChild(inp);
+    }
+    form.appendChild(document.createElement('br'));
+  });
+
+  // 連動功能（站點變更後自動更新名稱選項） － 只在新增/編輯 Vendor 時使用
+  if(opts && opts.linked){
+    const selSite = modal.querySelector('select[name="site"]');
+    const selName = modal.querySelector('select[name="name"]');
+    if(selSite && selName){
+      selSite.onchange = function(){
+        const siteVal = selSite.value;
+        const names = opts.EXCEL_VENDORS.filter(v=>v.site===siteVal).map(v=>v.name);
+        selName.innerHTML = names.map(n=>`<option value="${n}">${n}</option>`).join('');
+      };
+    }
+  }
+
+  modal.querySelector('#modalCancel').onclick=()=>{ modal.remove(); mask.remove(); };
+  modal.querySelector('#modalOK').onclick=function(e){
+    e.preventDefault();
+    const data={};
+    for(const f of processed){
+      const input = form.querySelector(`[name="${f.name}"]`);
+      if(f.type==='checkbox'){
+        data[f.name]=input.checked;
+        continue;
+      }
+      const val = input ? input.value.trim() : '';
+      if(input && input.required && val===''){
+        alert(`請填寫 ${f.label}`);
+        return;
+      }
+      if(f.type==='number' && val!==''){
+        const n = parseInt(val);
+        if(isNaN(n) || (f.min!==undefined && n<f.min) || (f.max!==undefined && n>f.max)){
+          alert(`請輸入有效的 ${f.label} (${f.min}-${f.max})`);
+          return;
+        }
+        data[f.name]=n;
+      }else{
+        data[f.name]=val;
+      }
+    }
+    cb(data);
+    modal.remove(); mask.remove();
+  };
+}
+
+/* ==============================
+   8?? 程式初始化
+============================== */
+window.onload=function(){
+  renderMainNav();
+  switchMainTab('penalty');
+  document.getElementById('date').value = new Date().toISOString().substring(0,10);
+  syncVendorMenus();
+  document.addEventListener('keydown',e=>{ if(e.key==='Enter') e.preventDefault(); });
+};
+window.switchMainTab=switchMainTab;
+window.switchSubTab=switchSubTab;
+window.saveSubForm=saveSubForm;
+</script>
+</body>
+</html>
